@@ -1,0 +1,178 @@
+type Item = {
+  id: string;
+  title: string;
+  description: string;
+  author: string;
+  category: "prompt" | "template" | "pipeline";
+  rating: number;
+  downloads: number;
+};
+
+const items: Item[] = [
+  {
+    id: "1",
+    title: "Creative Writing Prompt",
+    description: "A versatile prompt for creative writing exercises",
+    author: "Alice",
+    category: "prompt",
+    rating: 4.5,
+    downloads: 1200,
+  },
+  {
+    id: "2",
+    title: "SEO Content Template",
+    description: "Template for creating SEO-optimized blog posts",
+    author: "Bob",
+    category: "template",
+    rating: 4.2,
+    downloads: 980,
+  },
+  {
+    id: "3",
+    title: "Image to Video Pipeline",
+    description: "Convert still images into short video clips",
+    author: "Charlie",
+    category: "pipeline",
+    rating: 4.8,
+    downloads: 1500,
+  },
+  {
+    id: "4",
+    title: "Product Description Generator",
+    description: "AI-powered product description creator",
+    author: "David",
+    category: "prompt",
+    rating: 4.3,
+    downloads: 850,
+  },
+  {
+    id: "5",
+    title: "Social Media Content Calendar",
+    description: "Template for planning social media content",
+    author: "Eve",
+    category: "template",
+    rating: 4.6,
+    downloads: 1100,
+  },
+  {
+    id: "6",
+    title: "Text to Speech Pipeline",
+    description: "Convert written content into natural-sounding speech",
+    author: "Frank",
+    category: "pipeline",
+    rating: 4.7,
+    downloads: 1300,
+  },
+  {
+    id: "7",
+    title: "Academic Research Prompt",
+    description: "Structured prompt for academic paper analysis and synthesis",
+    author: "Grace",
+    category: "prompt",
+    rating: 4.9,
+    downloads: 2100,
+  },
+  {
+    id: "8",
+    title: "Newsletter Template",
+    description:
+      "Professional email newsletter layout with customizable sections",
+    author: "Henry",
+    category: "template",
+    rating: 4.4,
+    downloads: 1600,
+  },
+  {
+    id: "9",
+    title: "Data Visualization Pipeline",
+    description: "Transform raw data into interactive charts and graphs",
+    author: "Isabel",
+    category: "pipeline",
+    rating: 4.6,
+    downloads: 1800,
+  },
+  {
+    id: "10",
+    title: "Interview Question Generator",
+    description: "AI prompt for generating role-specific interview questions",
+    author: "Jack",
+    category: "prompt",
+    rating: 4.7,
+    downloads: 950,
+  },
+  {
+    id: "11",
+    title: "Project Management Template",
+    description:
+      "Comprehensive template for tracking project milestones and tasks",
+    author: "Karen",
+    category: "template",
+    rating: 4.8,
+    downloads: 2200,
+  },
+  {
+    id: "12",
+    title: "Audio Enhancement Pipeline",
+    description: "Clean and enhance audio recordings automatically",
+    author: "Liam",
+    category: "pipeline",
+    rating: 4.5,
+    downloads: 1400,
+  },
+  {
+    id: "13",
+    title: "Marketing Copy Generator",
+    description: "Create compelling marketing copy for various platforms",
+    author: "Maria",
+    category: "prompt",
+    rating: 4.6,
+    downloads: 1750,
+  },
+  {
+    id: "14",
+    title: "Resume Builder Template",
+    description: "Professional resume layouts with ATS-friendly formatting",
+    author: "Noah",
+    category: "template",
+    rating: 4.7,
+    downloads: 3100,
+  },
+  {
+    id: "15",
+    title: "Language Translation Pipeline",
+    description: "Accurate translation pipeline with context preservation",
+    author: "Olivia",
+    category: "pipeline",
+    rating: 4.8,
+    downloads: 2600,
+  },
+  {
+    id: "16",
+    title: "Code Documentation Prompt",
+    description: "Generate comprehensive code documentation automatically",
+    author: "Peter",
+    category: "prompt",
+    rating: 4.4,
+    downloads: 890,
+  },
+  {
+    id: "17",
+    title: "Business Plan Template",
+    description: "Structured template for creating professional business plans",
+    author: "Quinn",
+    category: "template",
+    rating: 4.5,
+    downloads: 1300,
+  },
+  {
+    id: "18",
+    title: "Image Enhancement Pipeline",
+    description: "Automatic photo enhancement and optimization workflow",
+    author: "Rachel",
+    category: "pipeline",
+    rating: 4.9,
+    downloads: 2800,
+  },
+];
+
+export default items;
