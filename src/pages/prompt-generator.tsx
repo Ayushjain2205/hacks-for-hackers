@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, useEffect } from "react";
 import { Layout } from "@/components/Layout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,40 +12,68 @@ import {
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Label } from "@/components/ui/label";
 import CustomCodeEditor from "@/components/CustomCodeEditor";
-import { PrismLight as SyntaxHighlighter } from "react-syntax-highlighter";
-import copy from "copy-to-clipboard";
 import { Loader2, Copy, Check, WandSparkles, Code } from "lucide-react";
-
-// Import languages you want to use
-import javascript from "react-syntax-highlighter/dist/cjs/languages/prism/javascript";
-import python from "react-syntax-highlighter/dist/cjs/languages/prism/python";
-import bash from "react-syntax-highlighter/dist/cjs/languages/prism/bash";
-
-// Register the languages you want to use
-SyntaxHighlighter.registerLanguage("javascript", javascript);
-SyntaxHighlighter.registerLanguage("python", python);
-SyntaxHighlighter.registerLanguage("bash", bash);
+import { useApp } from "@/contexts/AppContext";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function PromptGenerator() {
+  const { createVersion, currentCollection, loading, error } = useApp();
+  const { toast } = useToast();
   const [input, setInput] = useState("");
   const [generatedPrompt, setGeneratedPrompt] = useState("");
-  const [isGenerating, setIsGenerating] = useState(false);
   const [copied, setCopied] = useState(false);
   const [activeTab, setActiveTab] = useState("javascript");
 
+  useEffect(() => {
+    if (error) {
+      toast({
+        title: "Error",
+        description: error,
+        variant: "destructive",
+      });
+    }
+  }, [error, toast]);
+
   const handleGenerate = useCallback(async () => {
-    setIsGenerating(true);
-    // Simulating API call with setTimeout
-    setTimeout(() => {
-      const prompt =
-        "Choose a natural setting for your poem: {setting}\n2. Select a season or time of day: {timeOfDay}\n3. Identify one simple, everyday observation or activity: {observation}\n4. Consider how this observation connects to a deeper human truth: {humanTruth}\n\nSTRUCTURAL ELEMENTS\n1. Length: 4-5 stanzas\n2. Rhythm: Use natural speech patterns with these guidelines:\n   * Write in iambic meter (alternating unstressed/stressed syllables)\n   * Aim for 8-10 syllables per line\n   * Allow occasional variations for emphasis\n\nSTYLISTIC APPROACH\n1. Begin with a concrete image or scene: {openingImage}\n2. Use simple, conversational language\n3. Include specific details from rural New England life\n4. Incorporate natural sounds and silence: {naturalSounds}\n5. End with a quiet revelation or philosophical turn: {ending}\n\nTECHNICAL CONSIDERATIONS\n1. Choose a rhyme scheme: {rhymeScheme}\n   * AABA BBCB\n   * ABAB\n   * AABB\n2. Use alliteration sparingly\n3. Include at least one metaphor drawn from nature: {natureMetaphor}\n4. End with lines that echo but deepen the opening image\n\nWRITING PROCESS\n1. First draft: Focus on the narrative and images\n2. Second draft: Refine meter and rhyme\n3. Third draft: Add subtle sound patterns\n4. Final draft: Ensure the ending resonates with meaning\n\nFINAL PROMPT TEMPLATE:\nWrite a poem about {subject} set in {setting} during {timeOfDay}. Begin with {openingImage} and end with a reflection on {humanTruth}. Use {rhymeScheme} rhyme scheme and natural speech patterns. Include details about {naturalSounds} and their relationship to {observation}. Incorporate a metaphor comparing {natureMetaphor} to reflect on {ending}.\n\nQUESTIONS TO CONSIDER WHILE WRITING\n1. What everyday moment reveals something universal?\n2. How does the natural setting mirror human emotion?\n3. What simple words carry deeper meaning?\n4. What sounds in nature echo the poem's mood?\n5. How does the ending transform the opening image?";
-      setGeneratedPrompt(prompt);
-      setIsGenerating(false);
-    }, 2000);
-  }, [input]);
+    if (!currentCollection) {
+      toast({
+        title: "Error",
+        description: "Please select a collection first",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      // Create a new version with the generated prompt
+      await createVersion({
+        variationId: currentCollection.variations[0].id, // Using the first variation for simplicity
+        note: "Generated prompt",
+        prompt: generatedPrompt,
+        output: {
+          type: "text",
+          content: "Generated output will appear here",
+        },
+        promptTokens: generatedPrompt.split(" ").length,
+        outputTokens: 0,
+        tags: ["generated"],
+      });
+
+      toast({
+        title: "Success",
+        description: "Prompt version created successfully",
+      });
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "Failed to create prompt version",
+        variant: "destructive",
+      });
+    }
+  }, [currentCollection, generatedPrompt, createVersion, toast]);
 
   const handleCopy = useCallback((text: string) => {
-    copy(text);
+    navigator.clipboard.writeText(text);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   }, []);
@@ -57,7 +85,7 @@ const openai = new OpenAI();
 
 async function main() {
     const stream = await openai.chat.completions.create({
-        model: "gpt-4o-mini",
+        model: "gpt-4",
         messages: [{ role: "user", content: "${generatedPrompt}" }],
         stream: true,
     });
@@ -73,15 +101,14 @@ response = client.chat.completions.create(
         "role": "user",
         "content": "${generatedPrompt}",
     }],
-    model="gpt-4o-mini",
-)
-`,
-    bash: `curl https://api.openai.com/v1/chat/completions \
-  -H "Content-Type: application/json" \
-  -H "Authorization: Bearer $OPENAI_API_KEY" \
+    model="gpt-4",
+)`,
+    bash: `curl https://api.openai.com/v1/chat/completions \\
+  -H "Content-Type: application/json" \\
+  -H "Authorization: Bearer $OPENAI_API_KEY" \\
   -d '{
-     "model": "gpt-4o-mini",
-     "messages": [{"role": "user", "content": ${generatedPrompt}"}],
+     "model": "gpt-4",
+     "messages": [{"role": "user", "content": "${generatedPrompt}"}],
      "temperature": 0.7
    }'`,
   };
@@ -115,10 +142,10 @@ response = client.chat.completions.create(
               <div className="flex justify-end">
                 <Button
                   onClick={handleGenerate}
-                  disabled={isGenerating || !input}
+                  disabled={loading || !input}
                   className="bg-[#FF6B2C] hover:bg-[#E55A1B] text-white"
                 >
-                  {isGenerating ? (
+                  {loading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                       Generating...

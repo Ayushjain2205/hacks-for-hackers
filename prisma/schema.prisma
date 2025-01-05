@@ -1,0 +1,71 @@
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id            String         @id @default(auto()) @map("_id") @db.ObjectId
+  email         String        @unique
+  name          String?
+  collections   Collection[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model Collection {
+  id            String         @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  icon          String
+  model         String
+  description   String?
+  isPublic      Boolean       @default(false)
+  forkCount     Int           @default(0)
+  starCount     Int           @default(0)
+  createdAt     DateTime      @default(now())
+  lastModified  DateTime      @updatedAt
+  author        User          @relation(fields: [authorId], references: [id])
+  authorId      String        @db.ObjectId
+  variations    Variation[]
+  tags          String[]
+}
+
+model Variation {
+  id            String         @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  description   String?
+  collection    Collection    @relation(fields: [collectionId], references: [id])
+  collectionId  String        @db.ObjectId
+  versions      Version[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+}
+
+model Version {
+  id            String         @id @default(auto()) @map("_id") @db.ObjectId
+  note          String
+  prompt        String
+  output        Json
+  promptTokens  Int
+  outputTokens  Int
+  metadata      Json?
+  tags          String[]
+  variation     Variation     @relation(fields: [variationId], references: [id])
+  variationId   String        @db.ObjectId
+  createdAt     DateTime      @default(now())
+}
+
+model MLExperiment {
+  id            String         @id @default(auto()) @map("_id") @db.ObjectId
+  name          String
+  description   String?
+  metrics       Json
+  parameters    Json
+  artifacts     String[]
+  versionId     String        @db.ObjectId
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+} 
